@@ -1,4 +1,6 @@
 library(elevatr)
+library(dplyr)
+library(rayshader)
 
 elev_matrix <- function(lat, lon, zoom) {
   
@@ -25,21 +27,9 @@ elev_matrix <- function(lat, lon, zoom) {
   elevation <- elevatr::get_elev_raster(locations = geo_bounds,
                                prj = prj,
                                z = zoom,
-                               clip = "bbox",
-                               verbose = TRUE)
+                               clip = "bbox")
   
-  # coerce the RasterLayer to a spatialdataframe
-  elevation_spatial_df <- as(elevation, 'SpatialGridDataFrame')
-  
-  # ...and then coerce that to a dataframe
-  elevation_df <- as.data.frame(elevation_spatial_df)
-  
-  # find the desired dimensions of the matrix
-  nrow <- length(unique(elevation_df$s1))
-  
-  # make the matrix
-  elevation_matrix <- matrix(elevation_df$layer,
-                             nrow = nrow)
-  # and return it!
-  elevation_matrix
+  # coerce the RasterLayer to a  matrix
+  s <- raster_to_matrix(elevation)
+  s
 }
